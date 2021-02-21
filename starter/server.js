@@ -26,21 +26,27 @@ const data = fs.readFileSync(`${__dirname}/dev-data/data.json`,'utf-8');
 const dataObject = JSON.parse(data);
 
 const server = http.createServer((req,res)=>{
-    const urlPath = req.url;
-    console.log(urlPath);
+    
+    const {query , pathname} = url.parse(req.url , true)
+    console.log(query.id)
+
+    //pathName
+    const urlPath = pathname
     //overview page
 
     if(urlPath === '/'  || urlPath ==='/overview'){
         res.writeHead(200,{'content-type' : 'text/html'});
 
         const cardHtml = dataObject.map(el => replaceTemplate(tempCard ,el)).join('');
-        console.log(cardHtml);
         const output = tempOverview.replace('{%PRODUCT_CARDS%}',cardHtml);
         res.end(output);
     } 
     //product page
     else if(urlPath ==='/product'){
-        res.end('product page');
+        res.writeHead(200,{'content-type' : 'text/html'});
+        const product = dataObject[query.id]
+        const output = replaceTemplate(tempProduct , product)
+        res.end(output)
     }
     
     
